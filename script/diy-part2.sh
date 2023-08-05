@@ -50,10 +50,10 @@ pushd package/community
 #git clone --depth=1 https://github.com/Lienol/openwrt-package
 
 # Add luci-app-eqos
-svn co https://github.com/kiddin9/openwrt-packages/trunk/luci-app-eqos
+#svn co https://github.com/kiddin9/openwrt-packages/trunk/luci-app-eqos
 
 # Add dnsfilter
-git clone --depth=1 https://github.com/garypang13/luci-app-dnsfilter
+#git clone --depth=1 https://github.com/garypang13/luci-app-dnsfilter
 
 # Add luci-app-passwall
 svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-app-passwall
@@ -87,15 +87,15 @@ git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
 #git clone --depth=1 -b master https://github.com/vernesong/OpenClash
 
 # Add luci-app-onliner (need luci-app-nlbwmon)
-git clone --depth=1 https://github.com/rufengsuixing/luci-app-onliner
+#git clone --depth=1 https://github.com/rufengsuixing/luci-app-onliner
 
 # Add luci-app-adguardhome
 #git clone --depth=1 https://github.com/SuLingGG/luci-app-adguardhome
 
 # Add luci-app-diskman
-git clone --depth=1 https://github.com/SuLingGG/luci-app-diskman
-mkdir parted
-cp luci-app-diskman/Parted.Makefile parted/Makefile
+#git clone --depth=1 https://github.com/SuLingGG/luci-app-diskman
+#mkdir parted
+#cp luci-app-diskman/Parted.Makefile parted/Makefile
 
 # Add luci-app-dockerman
 #rm -rf ../lean/luci-app-docker
@@ -106,7 +106,7 @@ cp luci-app-diskman/Parted.Makefile parted/Makefile
 #svn co https://github.com/linkease/istore/trunk/luci/luci-app-store
 
 # Add luci-app-nat6-helper
-git clone --depth=1 https://github.com/Ausaci/luci-app-nat6-helper
+#git clone --depth=1 https://github.com/Ausaci/luci-app-nat6-helper
 
 # Add luci-theme-argon
 #cd lede/package/lean
@@ -119,10 +119,10 @@ git clone --depth=1 https://github.com/Ausaci/luci-app-nat6-helper
 #rm -rf ../lean/luci-theme-rosy
 
 # Add tmate
-git clone --depth=1 https://github.com/project-openwrt/openwrt-tmate
+#git clone --depth=1 https://github.com/project-openwrt/openwrt-tmate
 
 # Add subconverter
-git clone --depth=1 https://github.com/tindy2013/openwrt-subconverter
+#git clone --depth=1 https://github.com/tindy2013/openwrt-subconverter
 
 # Add luci-udptools
 #git clone --depth=1 https://github.com/zcy85611/openwrt-luci-kcp-udp
