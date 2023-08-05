@@ -31,7 +31,7 @@ sed -i 's/OpenWrt_5G/H3C_TX1801_PLUS-5G-$/g' package/lean/mt/drivers/mt_wifi/fil
 sed -i 's/OpenWRT-5G/H3C_TX1801_PLUS-5G/g' package/lean/mt/drivers/mt7615d/files/lib/wifi/mt_dbdc.sh
 
 # 添加个性信息
-sed -i 's/22.6.16/22.6.16 by nanchuci/g' ./package/lean/default-settings/files/zzz-default-settings
+#sed -i 's/22.6.16/22.6.16 by nanchuci/g' ./package/lean/default-settings/files/zzz-default-settings
 
 # 修改banne文件（banne文件在根目录）（不要修改此行代码,怕弄的diy-lede.sh文件全失效,不需要的话前面加#，或者全行代码删除了）
 #rm -rf ./package/base-files/files/etc/banne && cd .. && cp -f ./banner openwrt/package/base-files/files/etc/ && cd openwrt
@@ -56,8 +56,8 @@ pushd package/community
 #git clone --depth=1 https://github.com/garypang13/luci-app-dnsfilter
 
 # Add luci-app-passwall
-svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-app-passwall
-git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
+#svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-app-passwall
+#git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
 
 # Add luci-app-vssr <M>
 #git clone --depth=1 https://github.com/jerrykuku/lua-maxminddb.git
