@@ -80,30 +80,8 @@ sed -i '/customized in this file/a net.netfilter.nf_conntrack_max=165535' packag
 #svn co https://github.com/kiddin9/openwrt-packages/trunk/iptvhelper
 #svn co https://github.com/kiddin9/openwrt-packages/trunk/luci-app-iptvhelper
 
-# Add luci-app-gpsysupgrade
-#svn co https://github.com/kiddin9/my-packages/trunk/luci-app-gpsysupgrade
-
-# Add OpenClash
-#git clone --depth=1 -b master https://github.com/vernesong/OpenClash
-
-# Add luci-app-onliner (need luci-app-nlbwmon)
-#git clone --depth=1 https://github.com/rufengsuixing/luci-app-onliner
-
-# Add luci-app-adguardhome
-#git clone --depth=1 https://github.com/SuLingGG/luci-app-adguardhome
-
-# Add luci-app-diskman
-#git clone --depth=1 https://github.com/SuLingGG/luci-app-diskman
-#mkdir parted
-#cp luci-app-diskman/Parted.Makefile parted/Makefile
-
-# Add luci-app-dockerman
-#rm -rf ../lean/luci-app-docker
-#git clone --depth=1 https://github.com/KFERMercer/luci-app-dockerman
-#git clone --depth=1 https://github.com/lisaac/luci-lib-docker
-
-# Add luci-app-store
-#svn co https://github.com/linkease/istore/trunk/luci/luci-app-store
+# Add luci-app-pushbot
+#svn co https://github.com/kiddin9/openwrt-packages/trunk/luci-app-pushbot
 
 # Add luci-app-nat6-helper
 #git clone --depth=1 https://github.com/Ausaci/luci-app-nat6-helper
