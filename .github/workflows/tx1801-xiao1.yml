@@ -19,7 +19,7 @@ on:
 
 env:
   REPO_URL: https://github.com/hanwckf/immortalwrt-mt798x
-  REPO_BRANCH: master
+  REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/tx1801-xiao1.config
   DIY_P1_SH: script/diy-part1.sh
