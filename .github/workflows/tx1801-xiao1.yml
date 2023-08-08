@@ -16,10 +16,9 @@ on:
   repository_dispatch:
   workflow_dispatch:
 
-
 env:
-  REPO_URL: https://github.com/hanwckf/immortalwrt-mt798x
-  REPO_BRANCH: openwrt-21.02
+  REPO_URL: https://github.com/benboguan/lede0
+  REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/tx1801-xiao1.config
   DIY_P1_SH: script/diy-part1.sh
