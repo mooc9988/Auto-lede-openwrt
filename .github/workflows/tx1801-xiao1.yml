@@ -17,8 +17,8 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/benboguan/lede0
-  REPO_BRANCH: 7915-test
+  REPO_URL: https://github.com/benboguan/immortalwrt-mt7915
+  REPO_BRANCH: mt7915_mtwifi
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/tx1801-xiao1.config
   DIY_P1_SH: script/diy-part1.sh
