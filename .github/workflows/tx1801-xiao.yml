@@ -18,7 +18,7 @@ on:
 
 env:
   REPO_URL: https://github.com/benboguan/lede0
-  REPO_BRANCH: master
+  REPO_BRANCH: mt7915-dbdc
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/tx1801-xiao.config
   DIY_P1_SH: script/diy-part1.sh
