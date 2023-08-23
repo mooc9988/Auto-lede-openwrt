@@ -36,9 +36,7 @@ jobs:
         sudo apt install gcc-aarch64-linux-gnu build-essential flex bison libssl-dev
     - name: 下载uboot源码
       run: |
-        df -hT $PWD
-        git clone $REPO_URL -b $REPO_BRANCH opt/uboot
-        ln -sf /workdir/opt/uboot $GITHUB_WORKSPACE/opt/uboot
+        git clone https://github.com/benboguan/bl-mt798x.git /opt/uboot
     - name: 编译uboot
       run: |
         cd /opt/uboot
