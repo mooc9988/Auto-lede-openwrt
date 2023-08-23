@@ -1,0 +1,118 @@
+#
+#修改以下代码或者开启触发开关都好，要严格按格式对好,前面有多少空格也要看清楚
+#
+# This is a basic workflow to help you get started with Actions
+
+name: bl-mt798x-r30b1 uboot
+
+on: 
+
+  repository_dispatch:
+  workflow_dispatch:
+
+env:
+  REPO_URL: https://github.com/benboguan/bl-mt798x
+  REPO_BRANCH: master
+  UPLOAD_BIN_DIR: true
+  UPLOAD_FIRMWARE: true
+  UPLOAD_COWTRANSFER: flase
+  UPLOAD_WETRANSFER: true
+  UPLOAD_RELEASE: true
+
+jobs:
+  build:
+    name: 编译bl-mt798x uboot
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: 准备结束
+      uses: actions/checkout@master
+
+    - name: 开始安装编译所需系统
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo apt update
+        sudo apt install gcc-aarch64-linux-gnu build-essential flex bison libssl-dev
+    - name: 下载uboot源码
+      run: |
+        df -hT $PWD
+        git clone $REPO_URL -b $REPO_BRANCH opt/uboot
+        ln -sf /workdir/opt/uboot $GITHUB_WORKSPACE/opt/uboot
+    - name: 编译uboot
+      run: |
+        cd /opt/uboot
+        sudo chmod +x build.sh
+        sudo ./build.sh
+    - name : 上传
+      uses: actions/upload-artifact@master
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: opt/uboot_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: opt/uboot/bin
+
+    - name: 整理固件文件夹
+      id: organize
+      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      run: |
+        cd opt/uboot/bin/targets/*/*
+        rm -rf packages
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "status=success" >>$GITHUB_OUTPUT
+        
+    - name: 上传.config配置文件在github空间    
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_CONFIG == 'true'
+      uses: actions/upload-artifact@master
+      with:
+        name: config.buildinfo_${{ env.FILE_DATE }}
+        path: ./config    
+    
+    - name: 上传固件在github空间
+      uses: actions/upload-artifact@master
+      if: steps.organize.outputs.status == 'success' && !cancelled()
+      with:
+        name: r30b1-bl-mt798x uboot
+        path: ${{ env.FIRMWARE }}
+
+    - name: 上传固件到WeTransfer
+      id: wetransfer
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
+        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
+        echo "url=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >>$GITHUB_OUTPUT
+    - name: 创建 release tag
+      id: tag
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >>$GITHUB_OUTPUT
+        touch release.txt
+        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
+        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
+        echo "status=success" >>$GITHUB_OUTPUT
+
+    - name: 上传固件到release
+      uses: softprops/action-gh-release@v1
+      if: steps.tag.outputs.status == 'success' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
+        files: ${{ env.FIRMWARE }}/*
+
+    - name: 移除旧文件
+      uses: c-hive/gha-remove-artifacts@v1.2.0
+      with:
+        age: '1 day'
+        skip-recent: 3
+
+    - name: 移除以前的Releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      with:
+        keep_latest: 3
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
