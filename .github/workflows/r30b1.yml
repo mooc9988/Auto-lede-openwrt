@@ -17,12 +17,12 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/benboguan/lede0
-  REPO_BRANCH: master
+  REPO_URL: https://github.com/benboguan/immortalwrt-mt798x
+  REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: config/tx1801.config
+  CONFIG_FILE: config/r30b1.config
   DIY_P1_SH: script/diy-part1.sh
-  DIY_P2_SH: script/diy-part2.sh
+  DIY_P2_SH: script/diy-part3.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: flase
@@ -32,7 +32,7 @@ env:
 
 jobs:
   build:
-    name: 编译OpenWrt-lede固件
+    name: 编译OpenWrt-immortalwrt-mt798x固件
     runs-on: ubuntu-22.04
 
     steps:
@@ -53,11 +53,11 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-#    - name: 加载Cache缓存
-#      uses: klever1988/cachewrtbuild@main
-#      with:
-#        ccache: 'true'
-#        prefix: ${{ github.workspace }}/openwrt
+    - name: 加载Cache缓存
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        prefix: ${{ github.workspace }}/openwrt
     - name: 加载feeds跟自定义插件
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
@@ -140,7 +140,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: tx1801-LEDE-dbdc固件
+        name: r30b1-immortalwrt-mt798x固件
         path: ${{ env.FIRMWARE }}
 
     - name: 上传固件到WeTransfer
