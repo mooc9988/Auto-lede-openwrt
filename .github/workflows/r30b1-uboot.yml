@@ -42,6 +42,7 @@ jobs:
         cd /opt/uboot
         sudo chmod +x build.sh
         sudo ./build.sh
+        sudo SOC=mt7981 BOARD=clt-r30b1 ./build.sh
     - name : 上传
       uses: actions/upload-artifact@master
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
