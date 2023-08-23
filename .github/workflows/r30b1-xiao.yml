@@ -9,7 +9,7 @@
 #代码里有 name: 后面的内容随便改,冒号后面是有个空格的,如果修改固件名字就要考虑能不能显示出你想要的
 
 
-name: OpenWrt-tx1801 mt7915 闭源超精简固件
+name: immortalwrt-mt798x-r30b1 闭源精简固件
 
 on: 
 
@@ -17,12 +17,12 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/benboguan/lede0
-  REPO_BRANCH: mt7915-dbdc
+  REPO_URL: https://github.com/benboguan/immortalwrt-mt798x
+  REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: config/tx1801-xiao.config
+  CONFIG_FILE: config/r30b1-xiao.config
   DIY_P1_SH: script/diy-part1.sh
-  DIY_P2_SH: script/diy-part2.sh
+  DIY_P2_SH: script/diy-part3.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: flase
@@ -32,7 +32,7 @@ env:
 
 jobs:
   build:
-    name: 编译OpenWrt-lede固件
+    name: 编译OpenWrt-immortalwrt-mt798x固件
     runs-on: ubuntu-22.04
 
     steps:
@@ -53,11 +53,11 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-#    - name: 加载Cache缓存
-#      uses: klever1988/cachewrtbuild@main
-#      with:
-#        ccache: 'true'
-#        prefix: ${{ github.workspace }}/openwrt
+    - name: 加载Cache缓存
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        prefix: ${{ github.workspace }}/openwrt
     - name: 加载feeds跟自定义插件
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
@@ -134,7 +134,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: tx1801-LEDE-dbdc精简固件
+        name: r30b1-immortalwrt-mt798x精简固件
         path: ${{ env.FIRMWARE }}
 
     - name: 上传固件到WeTransfer
