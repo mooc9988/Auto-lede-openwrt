@@ -33,7 +33,9 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo apt update
-        sudo apt install gcc-aarch64-linux-gnu build-essential flex bison libssl-dev python3
+        sudo apt install gcc-aarch64-linux-gnu build-essential flex bison libssl-dev python3-distutils
+        sudo apt autoremove
+        sudo apt autoclean
     - name: 下载uboot源码
       run: |
         git clone https://github.com/benboguan/bl-mt798x.git /opt/uboot
