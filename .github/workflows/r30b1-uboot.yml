@@ -45,7 +45,7 @@ jobs:
         sudo chmod +x build.sh
         sudo ./build.sh
     - name : 上传
-        uses: actions/upload-artifact@v3
-        with:
-          name: u-boot
-          path: "uboot-mt7981/archive/"
+      uses: actions/upload-artifact@v3
+      with:
+        name: u-boot
+        path: "uboot-mt7981/archive/"
