@@ -47,6 +47,9 @@ jobs:
         cd openwrt
         sudo chmod +x build.sh
         sudo ./build.sh
+        echo -e "$(nproc) thread compile"
+        make -j$(nproc) || make -j1 || make -j1 V=s
+        echo "status=success" >>$GITHUB_OUTPUT
         echo "status=success" >>$GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -82,7 +85,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: r30b1-immortalwrt-mt798x精简固件
+        name: bl-mt798x uboot
         path: ${{ env.FIRMWARE }}
 
     - name: 上传固件到WeTransfer
