@@ -36,7 +36,6 @@ jobs:
         sudo -E apt-get -y install build-essential gcc-aarch64-linux-gnu build-essential flex bison libssl-dev python3-distutils device-tree-compiler
         sudo -E apt-get -y autoremove
         sudo -E apt-get autoclean
-        sudo timedatectl set-timezone "$TZ"
     - name: 下载uboot源码
       run: |
         git clone https://github.com/benboguan/bl-mt798x.git /opt/uboot
