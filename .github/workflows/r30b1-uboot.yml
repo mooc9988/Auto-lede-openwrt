@@ -6,123 +6,52 @@
 name: bl-mt798x-r30b1 uboot
 
 on: 
-
-  repository_dispatch:
   workflow_dispatch:
-
-env:
-  REPO_URL: https://github.com/benboguan/bl-mt798x
-  REPO_BRANCH: master
-  UPLOAD_BIN_DIR: true
-  UPLOAD_FIRMWARE: true
-  UPLOAD_COWTRANSFER: flase
-  UPLOAD_WETRANSFER: true
-  UPLOAD_RELEASE: true
-
+    inputs:
+      fixed_mtdparts:
+        description: 'Fixed mtd parts? (will not follow uboot env)'
+        required: true
+        type: boolean
+        default: 'true'
 jobs:
   build:
     name: 编译bl-mt798x uboot
     runs-on: ubuntu-22.04
 
     steps:
-    - name: 准备结束
-      uses: actions/checkout@main
+      - name: 准备结束
+        uses: actions/checkout@v3
 
-    - name: 开始安装编译所需系统
-      env:
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-        sudo -E apt-get update
-        sudo -E apt-get -y install build-essential gcc-aarch64-linux-gnu build-essential flex bison libssl-dev python3 device-tree-compiler
-        sudo -E apt-get -y autoremove
-        sudo -E apt-get autoclean
-    - name: 下载uboot源码
-      run: |
-        df -hT $PWD
-        git clone $REPO_URL -b $REPO_BRANCH openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-    - name: 编译uboot
-      id: compile
-      run: |
-        cd openwrt
-        sudo chmod +x build.sh
-        sudo ./build.sh
-        echo "status=success" >>$GITHUB_OUTPUT
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-    - name: 检查github储存空间情况
-      if: (!cancelled())
-      run: df -hT
-
-    - name: 上传bin文件夹(固件+ipk)在github空间
-      uses: actions/upload-artifact@main
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-      with:
-        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: openwrt/bin
-
-    - name: 整理固件文件夹
-      id: organize
-      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
-      run: |
-        cd openwrt/bin/targets/*/*
-        rm -rf packages
-        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "status=success" >>$GITHUB_OUTPUT
-        
-    - name: 上传.config配置文件在github空间    
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_CONFIG == 'true'
-      uses: actions/upload-artifact@main
-      with:
-        name: config.buildinfo_${{ env.FILE_DATE }}
-        path: ./config    
-    
-    - name: 上传固件在github空间
-      uses: actions/upload-artifact@main
-      if: steps.organize.outputs.status == 'success' && !cancelled()
-      with:
-        name: bl-mt798x uboot
-        path: ${{ env.FIRMWARE }}
-
-    - name: 上传固件到WeTransfer
-      id: wetransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        echo "url=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >>$GITHUB_OUTPUT
-    - name: 创建 release tag
-      id: tag
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-      run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >>$GITHUB_OUTPUT
-        touch release.txt
-        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
-        echo "status=success" >>$GITHUB_OUTPUT
-
-    - name: 上传固件到release
-      uses: softprops/action-gh-release@v1
-      if: steps.tag.outputs.status == 'success' && !cancelled()
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.tag.outputs.release_tag }}
-        body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
-
-    - name: 移除旧文件
-      uses: c-hive/gha-remove-artifacts@v1.2.0
-      with:
-        age: '1 day'
-        skip-recent: 3
-
-    - name: 移除以前的Releases
-      uses: dev-drprasad/delete-older-releases@v0.1.0
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-      with:
-        keep_latest: 3
-        delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 安装编译所需系统并下载源码
+        if: ${{ inputs.fixed_mtdparts == true }}
+        run: |
+          sudo apt update
+          sudo apt install build-essential bison flex bc libssl-dev python-is-python3 device-tree-compiler gcc-aarch64-linux-gnu
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          git clone https://github.com/benboguan/bl-mt798x
+          cd bl-mt798x
+          SOC=mt7981 BOARD=clt_r30b1 ./build.sh
+          
+      - name: 编译 clt_r30b1 uboot
+        if: ${{ inputs.fixed_mtdparts == false }}
+        run: |
+          sudo apt update
+          sudo apt install build-essential bison flex bc libssl-dev python-is-python3 device-tree-compiler gcc-aarch64-linux-gnu
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          git clone https://github.com/benboguan/bl-mt798x
+          cd bl-mt798x
+          SOC=mt7981 BOARD=clt_r30b1 FIXED_MTDPARTS=0 ./build.sh
+          
+      - name: 上传 FIP file with fixed mtdparts
+        if: ${{ inputs.fixed_mtdparts == true }}
+        uses: actions/upload-artifact@v3
+        with: 
+            name: clt_r30b1_uboot_fixed-parts
+            path: bl-mt798x/output/mt7981_clt_r30b1-fip-fixed-parts.bin
+      
+      - name: 上传 FIP file
+        if: ${{ inputs.fixed_mtdparts == false }}
+        uses: actions/upload-artifact@v3
+        with: 
+            name: clt_r30b1_uboot_fixed-parts
+            path: bl-mt798x/output/mt7981_clt_r30b1-fip.bin
