@@ -40,7 +40,7 @@ jobs:
           export CROSS_COMPILE=aarch64-linux-gnu-
           git clone https://github.com/benboguan/bl-mt798x
           cd bl-mt798x
-          SOC=mt7981 BOARD=clt_r30b1 FIXED_MTDPARTS=0 ./build.sh
+          SOC=mt7981 BOARD=clt_r30b1 FIXED_MTDPARTS=0 MULTI_LAYOUT=0 ./build.sh
           
       - name: 上传 FIP file with fixed mtdparts
         if: ${{ inputs.fixed_mtdparts == true }}
