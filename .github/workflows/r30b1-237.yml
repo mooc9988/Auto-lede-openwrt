@@ -64,7 +64,7 @@ jobs:
 
     - name: 加载.config设置
       run: |
-        cp .config/r30b1-237.config openwrt/.config
+        cp config/r30b1-237.config openwrt/.config
         cd openwrt
         rm -rf ./bin ./build_dir ./tmp
         make defconfig
