@@ -70,23 +70,10 @@ jobs:
         make defconfig
         cat ./.config
 
-    - name: 加载缓存
-      uses: actions/cache@v3
-      with:
-        path: |
-          openwrt/bin
-          openwrt/build_dir
-          openwrt/staging_dir
-          openwrt/tmp
-        key: cache_ar300nand_${{ hashFiles('openwrt/.config') }}
-        restore-keys: |
-          cache_ar300nand_
-          cache_ar300nand
-
     - name: 备份.config文件
       run: |
         mkdir ./bin
-        cp ./.config ./bin/config.bak
+        cp config/r30b1-237.config ./bin/config.bak
 
     - name: 更改固件IP 192.168.8.1
       run: |
