@@ -15,8 +15,7 @@ on:
 
   repository_dispatch:
   workflow_dispatch:
-# schedule:
-#   - cron:  '22 16 * * *'
+
 env:
   TZ: Asia/Shanghai
 
@@ -44,7 +43,6 @@ jobs:
         sudo chown $USER:$GROUPS /workdir
 
     - name: 下载固件源码
-      # working-directory: /workdir
       run: |
         pwd
         git clone -b clt-r30b1 --single-branch --depth=1 https://github.com/benboguan/immortalwrtARM openwrt
@@ -72,18 +70,18 @@ jobs:
         make defconfig
         cat ./.config
 
-     - name: 加载缓存
-       uses: actions/cache@v3
-       with:
-         path: |
-           openwrt/bin
-           openwrt/build_dir
-           openwrt/staging_dir
-           openwrt/tmp
-         key: cache_ar300nand_${{ hashFiles('openwrt/.config') }}
-         restore-keys: |
-           cache_ar300nand_
-           cache_ar300nand
+    - name: 加载缓存
+      uses: actions/cache@v3
+      with:
+        path: |
+          openwrt/bin
+          openwrt/build_dir
+          openwrt/staging_dir
+          openwrt/tmp
+        key: cache_ar300nand_${{ hashFiles('openwrt/.config') }}
+        restore-keys: |
+          cache_ar300nand_
+          cache_ar300nand
 
     - name: 备份.config文件
       run: |
