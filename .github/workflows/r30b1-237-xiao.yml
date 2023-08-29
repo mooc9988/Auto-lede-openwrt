@@ -15,8 +15,7 @@ on:
 
   repository_dispatch:
   workflow_dispatch:
-# schedule:
-#   - cron:  '22 16 * * *'
+
 env:
   TZ: Asia/Shanghai
 
@@ -44,7 +43,6 @@ jobs:
         sudo chown $USER:$GROUPS /workdir
 
     - name: 下载固件源码
-      # working-directory: /workdir
       run: |
         pwd
         git clone -b clt-r30b1 --single-branch --depth=1 https://github.com/benboguan/immortalwrtARM openwrt
@@ -66,7 +64,7 @@ jobs:
 
     - name: 加载.config设置
       run: |
-        cp .config/r30b1-237-xiao.config openwrt/.config
+        cp config/r30b1-237-xiao.config openwrt/.config
         cd openwrt
         rm -rf ./bin ./build_dir ./tmp
         make defconfig
@@ -88,7 +86,7 @@ jobs:
     - name: 备份.config文件
       run: |
         mkdir ./bin
-        cp ./.config ./bin/config.bak
+        cp config/r30b1-237-xiao.config ./bin/config.bak
 
     - name: 更改固件IP 192.168.8.1
       run: |
