@@ -9,7 +9,7 @@
 #代码里有 name: 后面的内容随便改,冒号后面是有个空格的,如果修改固件名字就要考虑能不能显示出你想要的
 
 
-name: immortalwrt-mt798x-r30b1 闭源精简固件
+name: r30b1 闭源精简固件
 
 on: 
 
@@ -17,16 +17,14 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/benboguan/immortalwrt-mt798x
-  REPO_BRANCH: mt7981-test
+  REPO_URL: https://github.com/benboguan/immortalwrtARM
+  REPO_BRANCH: clt-r30b1
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/r30b1-xiao-test.config
   DIY_P1_SH: script/diy-part1.sh
-  DIY_P2_SH: script/diy-part3.sh
+  DIY_P2_SH: script/diy-part2.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
-  UPLOAD_COWTRANSFER: flase
-  UPLOAD_WETRANSFER: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
@@ -48,32 +46,27 @@ jobs:
         sudo -E apt-get -y autoremove
         sudo -E apt-get autoclean
         sudo timedatectl set-timezone "$TZ"
+
     - name: 下载固件源码
       run: |
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
     - name: 加载Cache缓存
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
         prefix: ${{ github.workspace }}/openwrt
+
     - name: 加载feeds跟自定义插件
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
-    - name: 清除 feeds
-      run: cd openwrt && ./scripts/feeds clean
-
-    - name: 下载feeds跟安装自定义插件
-      run: cd openwrt && ./scripts/feeds update -a
-
-    - name: 部署feeds
-      run: cd openwrt && ./scripts/feeds install -a
-
-    - name: 再次下载安装feeds
+        
+    - name: 更新 & 安装 feeds
       run: |
         cd openwrt
         ./scripts/feeds update -a
@@ -93,6 +86,7 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+
     - name: 开始编译固件
       id: compile
       run: |
@@ -103,6 +97,7 @@ jobs:
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
     - name: 检查github储存空间情况
       if: (!cancelled())
       run: df -hT
@@ -137,22 +132,14 @@ jobs:
         name: r30b1-immortalwrt-mt798x精简固件
         path: ${{ env.FIRMWARE }}
 
-    - name: 上传固件到WeTransfer
-      id: wetransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        echo "url=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >>$GITHUB_OUTPUT
-    - name: 创建 release tag
+    - name: 生成release标签
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >>$GITHUB_OUTPUT
         touch release.txt
-        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
+        echo "clt-r30b1-xiao" >> release.txt
+        echo "📥 精简固件下载" >> release.txt
         echo "status=success" >>$GITHUB_OUTPUT
 
     - name: 上传固件到release
@@ -175,7 +162,7 @@ jobs:
       uses: dev-drprasad/delete-older-releases@v0.1.0
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 3
+        keep_latest: 6
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
