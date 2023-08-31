@@ -9,7 +9,7 @@
 #代码里有 name: 后面的内容随便改,冒号后面是有个空格的,如果修改固件名字就要考虑能不能显示出你想要的
 
 
-name: r30b1 237源码闭源固件
+name: r30b1 luci闭源固件
 
 on: 
 
@@ -64,7 +64,7 @@ jobs:
 
     - name: 加载.config设置
       run: |
-        cp config/r30b1-237.config openwrt/.config
+        cp config/r30b1-lcui.config openwrt/.config
         cd openwrt
         rm -rf ./bin ./build_dir ./tmp
         make defconfig
@@ -73,12 +73,12 @@ jobs:
     - name: 备份.config文件
       run: |
         mkdir ./bin
-        cp config/r30b1-237.config ./bin/config.bak
+        cp config/r30b1-luci.config ./bin/config.bak
 
-    - name: 更改固件IP 192.168.8.1
+    - name: 更改固件IP 192.168.110.1
       run: |
         cd openwrt
-        sed -i "s/192.168.1.1/192.168.8.1/" package/base-files/files/bin/config_generate
+        sed -i "s/192.168.1.1/192.168.110.1/" package/base-files/files/bin/config_generate
         cat package/base-files/files/bin/config_generate|grep lan\)
 
     - name: 编译固件
@@ -124,12 +124,6 @@ jobs:
         cd openwrt
         tar -zcvf dl.tar.gz ./dl/
         mv dl.tar.gz ${{ env.RELEASE_PATH }}/
-        
-    # - name: 上传到云端
-    #   id: cloudupload
-    #   run: |
-    #     curl -fsSL git.io/file-transfer | sh
-    #     ./transfer wss --no-progress ${{ env.RELEASE_PATH }}/bin_dir.tar.gz 2>&1 | tee release.txt
 
     - name: 上传固件到release
       uses: softprops/action-gh-release@v1
