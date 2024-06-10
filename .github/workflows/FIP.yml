@@ -22,7 +22,7 @@ on:
 #    - cron: 0 16 * * *
 
 env:
-  REPO_URL: https://github.com/benboguan/bl-mt798x
+  REPO_ID: benboguan/bl-mt798x
   REPO_BRANCH: master
   SSH_ACTIONS: false
   UPLOAD_FIRMWARE: true
@@ -38,7 +38,14 @@ jobs:
     
     steps:
     - name: 检查项目分支
-      uses: actions/checkout@main
+      uses: actions/checkout@v4
+    
+    - name: 下载uboot源码
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ env.REPO_ID }}
+        ref: ${{ env.REPO_BRANCH }}
+        path: openwrt
 
     - name: 初始化编译环境
       env:
@@ -54,14 +61,7 @@ jobs:
         sudo apt clean
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
-        
-    - name: 下载uboot源码
-      working-directory: /workdir
-      run: |
-        df -hT $PWD
-        git clone $REPO_URL -b $REPO_BRANCH openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt        
+        sudo chown $USER:$GROUPS /workdir    
     
     - name: SSH链接管理
       uses: P3TERX/ssh2actions@v1.0.0
@@ -73,11 +73,11 @@ jobs:
     - name: 编译uboot
       id: compile
       run: |
-        cd openwrt
         echo -e "$(nproc) thread compile"
         SOC=mt7981 BOARD=clt_r30b1 MULTI_LAYOUT=1 ./build.sh
         echo "FILE_DATE=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
+      working-directory: ./openwrt
         
     - name: 查看磁盘使用情况
       if: (!cancelled())
@@ -87,12 +87,12 @@ jobs:
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: | 
-        cd openwrt/output
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
+      working-directory: ./openwrt/output
       
     - name: 上传uboot到Artifacts
-      uses: actions/upload-artifact@main
+      uses: actions/upload-artifact@v4
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: ${{ env.FILE_DATE }}-${{ env.OPENWRT_NAME }}-${{ env.DEVICE_NAME }}
@@ -109,7 +109,7 @@ jobs:
         echo "status=success" >> $GITHUB_OUTPUT
         
     - name: 发布至release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

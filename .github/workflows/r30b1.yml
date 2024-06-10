@@ -30,21 +30,14 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: 准备结束
+    - name: Checkout this project
       uses: actions/checkout@v4
-    
-    - name: Checkout KOS repo
-      uses: actions/checkout@v4
-      with:
-        repository: AutoMQ/automq
-        ref: main
-        path: automq
 
     - name: Checkout openwrt
       uses: actions/checkout@v4
       with:
-        repository: hanwckf/immortalwrt-mt798x
-        ref: openwrt-21.02
+        repository: ${{ env.REPO_ID }}
+        ref: ${{ env.REPO_BRANCH }}
         path: openwrt
 
     - name: 开始安装编译所需系统
@@ -56,7 +49,6 @@ jobs:
         sudo -E apt-get -y autoremove
         sudo -E apt-get autoclean
         sudo timedatectl set-timezone "$TZ"
-  
 
     - name: 加载Cache缓存
       uses: klever1988/cachewrtbuild@main
