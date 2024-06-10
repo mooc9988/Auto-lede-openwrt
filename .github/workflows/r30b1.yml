@@ -43,6 +43,13 @@ jobs:
         sudo -E apt-get autoclean
         sudo timedatectl set-timezone "$TZ"
     
+    - name: Checkout KOS repo
+      uses: actions/checkout@v4
+      with:
+        repository: AutoMQ/automq
+        ref: main
+        path: automq
+
     - name: Checkout openwrt
       uses: actions/checkout@v4
       with:
