@@ -32,16 +32,6 @@ jobs:
     steps:
     - name: 准备结束
       uses: actions/checkout@v4
-
-    - name: 开始安装编译所需系统
-      env:
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-        sudo -E apt-get update
-        sudo -E apt-get -y install build-essential gawk gcc-multilib flex git gettext libncurses5-dev libssl-dev python3-distutils zlib1g-dev
-        sudo -E apt-get -y autoremove
-        sudo -E apt-get autoclean
-        sudo timedatectl set-timezone "$TZ"
     
     - name: Checkout KOS repo
       uses: actions/checkout@v4
@@ -53,9 +43,20 @@ jobs:
     - name: Checkout openwrt
       uses: actions/checkout@v4
       with:
-        repository: ${{ env.REPO_ID }}
-        ref: $${{ env.REPO_BRANCH }}
+        repository: hanwckf/immortalwrt-mt798x
+        ref: openwrt-21.02
         path: openwrt
+
+    - name: 开始安装编译所需系统
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo -E apt-get update
+        sudo -E apt-get -y install build-essential gawk gcc-multilib flex git gettext libncurses5-dev libssl-dev python3-distutils zlib1g-dev
+        sudo -E apt-get -y autoremove
+        sudo -E apt-get autoclean
+        sudo timedatectl set-timezone "$TZ"
+  
 
     - name: 加载Cache缓存
       uses: klever1988/cachewrtbuild@main
