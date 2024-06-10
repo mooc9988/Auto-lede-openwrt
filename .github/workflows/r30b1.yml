@@ -46,8 +46,8 @@ jobs:
     - name: Checkout openwrt
       uses: actions/checkout@v4
       with:
-        repository: $REPO_ID
-        ref: $REPO_BRANCH
+        repository: ${{ env.REPO_ID }}
+        ref: $${{ env.REPO_BRANCH }}
         path: openwrt
 
     - name: 加载Cache缓存
