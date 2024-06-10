@@ -19,6 +19,7 @@ env:
   REPO_ID: hanwckf/immortalwrt-mt798x
   REPO_BRANCH: openwrt-21.02
   CONFIG_FILE: config/r30b1.config
+  DIY_P0_SH: script/diy-part0.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -39,6 +40,12 @@ jobs:
         repository: ${{ env.REPO_ID }}
         ref: ${{ env.REPO_BRANCH }}
         path: openwrt
+    
+    - name: 执行自定义脚本
+      run: |
+        chmod +x $DIY_P0_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P0_SH
 
     - name: 开始安装编译所需系统
       env:
@@ -88,13 +95,6 @@ jobs:
     - name: 检查github储存空间情况
       if: (!cancelled())
       run: df -hT
-
-    - name: 上传bin文件夹(固件+ipk)在github空间
-      uses: actions/upload-artifact@v4
-      if: env.UPLOAD_BIN_DIR == 'true'
-      with:
-        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: openwrt/bin
 
     - name: 整理固件文件夹
       id: organize
