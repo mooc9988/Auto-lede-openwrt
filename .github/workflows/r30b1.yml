@@ -30,8 +30,15 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: 准备结束
+    - name: Checkout this project
       uses: actions/checkout@v4
+
+    - name: Checkout openwrt
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ env.REPO_ID }}
+        ref: ${{ env.REPO_BRANCH }}
+        path: openwrt
 
     - name: 开始安装编译所需系统
       env:
@@ -42,13 +49,6 @@ jobs:
         sudo -E apt-get -y autoremove
         sudo -E apt-get autoclean
         sudo timedatectl set-timezone "$TZ"
-    
-    - name: Checkout openwrt
-      uses: actions/checkout@v4
-      with:
-        repository: $REPO_ID
-        ref: $REPO_BRANCH
-        path: openwrt
 
     - name: 加载Cache缓存
       uses: klever1988/cachewrtbuild@main
