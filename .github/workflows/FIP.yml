@@ -24,7 +24,6 @@ on:
 env:
   REPO_URL: https://github.com/benboguan/bl-mt798x
   REPO_BRANCH: master
-  DIY_P_SH: hanwckf/clt-r30b1-FIP/diy-part.sh
   SSH_ACTIONS: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -62,13 +61,7 @@ jobs:
       run: |
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-    
-    - name: 加载DIY脚本
-      run: |
-        chmod +x $DIY_P_SH
-        cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P_SH        
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt        
     
     - name: SSH链接管理
       uses: P3TERX/ssh2actions@v1.0.0
