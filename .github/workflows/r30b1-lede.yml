@@ -18,7 +18,7 @@ env:
   REPO_ID: coolsnowwolf/lede
   REPO_BRANCH: master
   CONFIG_FILE: config/r30b1-lede.config
-  DIY_P0_SH: script/diy-part0.sh
+  DIY_P0_SH: script/diy-lede.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true

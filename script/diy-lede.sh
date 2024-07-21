@@ -10,20 +10,20 @@
 # Description: OpenWrt DIY script part 2 (After Update feeds)
 #
 # 修改openwrt登陆地址,把下面的192.168.123.1修改成你想要的就可以了
-sed -i 's/192.168.1.1/192.168.110.1/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/192.168.123.1/g' package/base-files/files/bin/config_generate
 
 # 修改主机名字，把R30B1修改你喜欢的就行（不能纯数字或者使用中文）
-sed -i 's/ImmortalWrt/R30B1/g' package/base-files/files/bin/config_generate
+sed -i 's/OpenWrt/R30B1-LEDE/g' package/base-files/files/bin/config_generate
 
 # 修改开源驱动wifi名称
 #sed -i 's/OpenWrt/R30B1_AX3000/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
 
 # 修改闭源驱动2G wifi名称
-sed -i 's/MT7981_AX3000_2.4G/R30B1_AX3000_2.4G/g' package/mtk/drivers/wifi-profile/files/mt7981/mt7981.dbdc.b0.dat
+# sed -i 's/MT7981_AX3000_2.4G/R30B1/g' package/mtk/drivers/wifi-profile/files/mt7981/mt7981.dbdc.b0.dat
 #sed -i 's/OpenWRT-2.4G/R30B1_AX3000_2.4G/g' package/mtk/drivers/wifi-profile/files/mt7981/files/lib/wifi/mt_dbdc.sh
 
 # 修改闭源驱动5G wifi名称
-sed -i 's/MT7981_AX3000_5G/R30B1_AX3000_5G/g' package/mtk/drivers/wifi-profile/files/mt7981/mt7981.dbdc.b1.dat
+# sed -i 's/MT7981_AX3000_5G/R30B1_5G/g' package/mtk/drivers/wifi-profile/files/mt7981/mt7981.dbdc.b1.dat
 #sed -i 's/OpenWRT-5G/R30B1_AX3000_5G/g' package/mtk/drivers/wifi-profile/files/mt7981/files/lib/wifi/mt_dbdc.sh
 
 # 添加个性信息
@@ -33,7 +33,7 @@ sed -i 's/MT7981_AX3000_5G/R30B1_AX3000_5G/g' package/mtk/drivers/wifi-profile/f
 #rm -rf ./package/base-files/files/etc/banne && cd .. && cp -f ./banner openwrt/package/base-files/files/etc/ && cd openwrt
 
 # 更改时区
-sed -i "s/'UTC'/'CST-8'\n        set system.@system[-1].zonename='Asia\/Shanghai'/g" package/base-files/files/bin/config_generate
+# sed -i "s/'UTC'/'CST-8'\n        set system.@system[-1].zonename='Asia\/Shanghai'/g" package/base-files/files/bin/config_generate
 
 #修正连接数
 #sed -i '/customized in this file/a net.netfilter.nf_conntrack_max=165535' package/base-files/files/etc/sysctl.conf
