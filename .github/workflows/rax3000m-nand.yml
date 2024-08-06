@@ -8,16 +8,16 @@
 #修改以下代码或者开启触发开关都好，要严格按格式对好,前面有多少空格也要看清楚
 #代码里有 name: 后面的内容随便改,冒号后面是有个空格的,如果修改固件名字就要考虑能不能显示出你想要的
 
-name: r30b1 自用 LEDE 固件
+name: RAX3000M-nand 自用闭源固件
 
 on:
   repository_dispatch:
   workflow_dispatch:
 
 env:
-  REPO_ID: coolsnowwolf/lede
-  REPO_BRANCH: master
-  CONFIG_FILE: config/r30b1-lede.config
+  REPO_ID: hanwckf/immortalwrt-mt798x
+  REPO_BRANCH: openwrt-21.02
+  CONFIG_FILE: config/rax3000m.config
   DIY_P0_SH: script/diy-part0.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -26,7 +26,7 @@ env:
 
 jobs:
   build:
-    name: 编译OpenWrt-LEDE固件
+    name: 编译OpenWrt-immortalwrt-mt798x固件
     runs-on: ubuntu-22.04
 
     steps:
@@ -110,8 +110,8 @@ jobs:
         run: |
           echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >>$GITHUB_OUTPUT
           touch release.txt
-          echo "clt-r30b1-LEDE" >> release.txt
-          echo "📥 LEDE 固件下载" >> release.txt
+          echo "clt-rax3000m-nand" >> release.txt
+          echo "📥 IMMORTALWRT 固件下载" >> release.txt
 
       - name: 上传固件到release
         uses: softprops/action-gh-release@v2
