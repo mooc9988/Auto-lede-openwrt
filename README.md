@@ -1,7 +1,8 @@
 # Auto-Build_OpenWrt
 * 云编译r30b1-immortalwrt-mt798x固件
 * 云编译RAX3000M-Nand-immortalwrt-mt798x固件
-build clt-r30b1 by mooc9988
+
+built by mooc9988
 
 ## immortalwrt
 源码： 
