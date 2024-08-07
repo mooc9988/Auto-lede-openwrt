@@ -17,7 +17,7 @@ on:
 env:
   REPO_ID: hanwckf/immortalwrt-mt798x
   REPO_BRANCH: openwrt-21.02
-  CONFIG_FILE: config/rax3000m.config
+  CONFIG_FILE: config/rax3000m-1.config
   DIY_P0_SH: script/diy-part0.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -85,7 +85,7 @@ jobs:
         id: compile
         run: |
           echo -e "$(nproc) thread compile"
-          make -j$(nproc) V=s
+          make -j$(nproc)
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
